@@ -1,0 +1,32 @@
+# Real configuration and credentials. Never commit these.
+#
+# Note the absence of a `*.lock` pattern: uv.lock is committed on purpose, and
+# a blanket *.lock would silently exclude it. The store's flock sidecar is
+# named explicitly below instead.
+entities.yaml
+entities.*.yaml
+!entities.example.yaml
+.env
+.env.*
+!.env.example
+tokens.*
+*.enc
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.venv-*/
+venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/

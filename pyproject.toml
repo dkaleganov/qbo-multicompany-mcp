@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qbo-multicompany-mcp"
+version = "0.1.0"
+description = "Read-only MCP server serving several QuickBooks Online company files to one AI session."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Dima Kaleganov" }]
+keywords = ["mcp", "quickbooks", "qbo", "read-only", "accounting"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Office/Business :: Financial :: Accounting",
+]
+dependencies = [
+  "mcp>=2.2,<3",
+  "mcp-types>=2.2,<3",
+  "anyio>=4.15,<5",
+  "httpx>=0.28,<0.29",
+  "pydantic>=2.13,<3",
+  "pyyaml>=6,<7",
+  "python-dotenv>=1.2,<2",
+  "cryptography>=46,<60",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=9.1,<10", "anyio>=4.15,<5"]
+
+[project.urls]
+Homepage = "https://github.com/dkaleganov/qbo-multicompany-mcp"
+Repository = "https://github.com/dkaleganov/qbo-multicompany-mcp"
+Issues = "https://github.com/dkaleganov/qbo-multicompany-mcp/issues"
+
+[project.scripts]
+qbo-multicompany-mcp = "qbo_multicompany_mcp.server:main"
+qbo-multicompany-mcp-auth = "qbo_multicompany_mcp.auth_cli:main"
+qbo-multicompany-mcp-keepalive = "qbo_multicompany_mcp.keepalive:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qbo_multicompany_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,225 @@
+# gitleaks configuration for qbo-multicompany-mcp.
+#
+# This repository is public from its first commit, and the thing it handles is
+# a rotating OAuth credential per QuickBooks company file. The cost of one
+# committed refresh token is a live company's books; the cost of a false
+# positive is thirty seconds. The rules below are tuned accordingly.
+#
+# Two design choices are worth stating, because both are the opposite of the
+# usual shortcut:
+#
+# 1. **Rules are keyword-anchored.** Each rule declares `keywords`, so it only
+#    runs where the surrounding text actually names the thing. A bare 16-digit
+#    number is not a finding; the same digits behind a `realm_id:` key are.
+#    This is what makes it possible to scan for realm ids at all: an
+#    unanchored digit rule would fire on every timestamp and checksum in tree.
+#
+# 2. **`tests/` is NOT allowlisted by path.** Allowlisting the test tree would
+#    be the easy way to silence the synthetic fixtures, and it would also
+#    switch off every rule in the one directory most likely to accumulate a
+#    real token during debugging. Instead the synthetic values are allowlisted
+#    *by value*, individually, below. Adding a new fixture credential therefore
+#    requires editing this file -- which is a feature: it puts a human in front
+#    of the decision.
+#
+# Run both scans:
+#   gitleaks git  --no-banner --redact     # commit history
+#   gitleaks dir  --no-banner --redact     # working tree
+#
+# `--redact` matters: without it gitleaks prints the secret it found, which
+# turns a scan log into the leak it was looking for.
+
+title = "qbo-multicompany-mcp"
+
+[extend]
+# Keep the upstream ruleset (AWS keys, GitHub tokens, private keys, and so on)
+# and add the QuickBooks-specific rules below on top of it. A future
+# contributor is far more likely to paste a cloud credential than an Intuit
+# one, and those rules are already written and maintained upstream.
+useDefault = true
+
+
+# ---------------------------------------------------------------------------
+# Intuit app credentials
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "qbo-client-id"
+description = "Intuit OAuth client id"
+# The `AB` prefix followed by a long base62 run is the shape observed on Intuit
+# app credentials; Intuit's docs give no client-id format.
+# The second alternation catches any long opaque value assigned to a client id
+# field, so a differently-shaped id is still caught.
+regex = '''(?i)\b(?:qbo[_-])?client[_-]?id["']?\s*[:=>]{1,2}\s*["']?(AB[A-Za-z0-9]{24,150}|[A-Za-z0-9][A-Za-z0-9._\-]{23,150})["']?'''
+keywords = ["client_id", "clientid", "client-id", "qbo_client_id"]
+entropy = 3.0
+
+[[rules]]
+id = "qbo-client-secret"
+description = "Intuit OAuth client secret"
+regex = '''(?i)\b(?:qbo[_-])?client[_-]?secret["']?\s*[:=>]{1,2}\s*["']?([A-Za-z0-9][A-Za-z0-9._\-]{15,150})["']?'''
+keywords = ["client_secret", "clientsecret", "client-secret", "qbo_client_secret"]
+entropy = 3.0
+
+
+# ---------------------------------------------------------------------------
+# Tokens
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "qbo-refresh-token"
+description = "Intuit OAuth refresh token"
+# The one that matters most. It stays live for up to 100 days of inactivity, and
+# an operator cannot quietly retire a leaked one: a refresh replaces it with a
+# value the operator's own server must then adopt, and a revoke breaks that
+# server outright.
+regex = '''(?i)\b(?:qbo[_-]import[_-])?refresh[_-]?token["']?\s*[:=>]{1,2}\s*["']?(AB[A-Za-z0-9]{20,200}|[A-Za-z0-9][A-Za-z0-9._\-]{29,200})["']?'''
+keywords = ["refresh_token", "refreshtoken", "refresh-token", "qbo_import_refresh_token"]
+entropy = 3.0
+
+[[rules]]
+id = "qbo-access-token"
+description = "Intuit OAuth access token (JWT-shaped)"
+regex = '''\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{8,}'''
+keywords = ["eyj"]
+entropy = 3.5
+
+[[rules]]
+id = "qbo-bearer-token"
+description = "Bearer token in an Authorization header"
+regex = '''(?i)\bbearer\s+([A-Za-z0-9][A-Za-z0-9._\-]{23,200})'''
+keywords = ["bearer"]
+entropy = 3.0
+
+[[rules]]
+id = "qbo-token-store-key"
+description = "Token store encryption key (QBO_TOKEN_KEY)"
+# 32 bytes, base64 or hex. Not a credential at Intuit, but it decrypts every
+# credential this package holds, which amounts to the same thing.
+regex = '''(?i)\bQBO_TOKEN_KEY["']?\s*[:=>]{1,2}\s*["']?([A-Za-z0-9+/]{40,}={0,2}|[0-9a-f]{64})["']?'''
+keywords = ["qbo_token_key"]
+entropy = 3.5
+
+
+# ---------------------------------------------------------------------------
+# Realm ids
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "qbo-realm-id"
+description = "QuickBooks realm id (company file identifier)"
+# Not secret in the cryptographic sense, and deliberately still a finding: a
+# realm id names a specific real company's books, and publishing one alongside
+# this server's source tells a reader exactly which company to go after. The
+# package itself never emits more than realm_id_last4 for the same reason.
+# Anchored on `realm`, not `realm_id`: the fixtures in tests/conftest.py are
+# named REALM_MAIN and REALM_OPS, so a rule anchored on `realm_id` would never
+# fire on them at all. A rule that matches nothing reports zero findings forever.
+regex = '''(?i)\brealm[a-z0-9_\-]*["']?\s*[:=>]{1,2}\s*["']?([0-9]{9,20})["']?'''
+keywords = ["realm"]
+
+[[rules]]
+id = "qbo-realm-id-in-url"
+description = "QuickBooks realm id in an Accounting API path"
+regex = '''/v3/company/([0-9]{9,20})'''
+keywords = ["/v3/company/"]
+
+
+# ---------------------------------------------------------------------------
+# Global allowlist
+# ---------------------------------------------------------------------------
+
+[[allowlists]]
+description = "Build artifacts, virtualenvs and the dependency lock"
+paths = [
+  '''(^|/)__pycache__/''',
+  '''(^|/)\.venv/''',
+  '''(^|/)\.pytest_cache/''',
+  '''(^|/)\.ruff_cache/''',
+  '''\.py[cod]$''',
+  '''(^|/)uv\.lock$''',
+  '''(^|/)\.git/''',
+]
+
+[[allowlists]]
+description = "Synthetic fixture realms: a long run of zeros with a short tail"
+# The shape enforced by tests/test_repo_hygiene.py. Anything else that looks
+# like a realm id is a finding, including in the test tree.
+regexTarget = "match"
+regexes = [
+  '''(?i)realm[a-z0-9_\-]*["']?\s*[:=>]{1,2}\s*["']?0{8,}[0-9]{0,4}["']?$''',
+  '''/v3/company/0{8,}[0-9]{0,4}$''',
+]
+
+[[allowlists]]
+description = "Code references to a credential attribute, not credential values"
+# Forgives `client_secret=credentials.client_secret` and
+# `"QBO_CLIENT_SECRET": credentials.client_secret`.
+#
+# A looser pattern would exempt any lowercase alphanumeric run, so a generated
+# lowercase client secret would produce no finding. Three conditions, each of
+# which a credential value fails on its own:
+#   * the value is unquoted -- a literal is quoted, a reference is not. The
+#     match target is used so the quote is visible;
+#   * it is dotted -- an attribute access, not a bare word;
+#   * it ENDS in the credential attribute's own name. Requiring only "dotted"
+#     would still forgive an unquoted `.env` value with a dot in it, and a dot
+#     is inside every credential rule's alphabet.
+# tests/test_secret_scanning.py carries a lowercase canary per credential rule.
+regexTarget = "match"
+regexes = [
+  '''[:=>]\s*[a-z_][a-z0-9_]{0,40}(\.[a-z_][a-z0-9_]{0,40}){0,4}\.(client_id|client_secret|refresh_token|access_token)$''',
+]
+
+[[allowlists]]
+description = "Brace placeholders in format strings and docs"
+# Inert for every rule in this file -- each captures a value that must begin
+# with a letter or digit, never a brace -- and kept for the upstream rules,
+# which capture more loosely. Bounded, so it cannot become the next shape
+# exemption.
+regexTarget = "secret"
+regexes = [
+  '''^\{[a-z_]{1,40}\}$''',
+]
+
+[[allowlists]]
+description = "Synthetic fixture credentials, listed individually and on purpose"
+# Every entry here is a literal a reader can find in tests/, anchored at both
+# ends: anchored at the start only, it would also forgive a real credential
+# that begins with it, in any file. Listing them one by one, rather than
+# allowlisting the directory, keeps the rules live in the test tree. That is
+# where a real token is most likely to be pasted during a debugging session
+# and then forgotten.
+regexTarget = "secret"
+regexes = [
+  # tests/conftest.py and the CLI tests
+  '''^test-client-(id|secret)$''',
+  '''^explicit-(id|secret)$''',
+  '''^from-(file|shell|implicit-search|connect|import|browser|paste)$''',
+  '''^(adopted|fresh)-(access|refresh)$''',
+  '''^(never-used|never-persisted|someone-elses-token|a-live-token)$''',
+  # tests/test_error_boundary.py -- strings whose purpose is to prove the
+  # redactor removes them.
+  #
+  # Only the JWTs below are irreducible: the redaction rule they exercise
+  # matches on SHAPE, so the fixtures have to carry the shape, and the scanner
+  # will always see a JWT there. The second one is deliberately un-prefixed and
+  # has every segment under forty characters, so it can only be caught by the
+  # JWT rule itself -- disabling that rule has to fail a test rather than pass
+  # one because some other rule happened to cover it.
+  #
+  # The `code=` fixture above it is a different case. That redaction rule is
+  # anchored on the KEY, so the value never had to look like a secret, and this
+  # entry currently suppresses nothing -- it is a guard, not a live
+  # suppression. Reshape a fixture to a plainly synthetic value first; allowlist
+  # only when the shape is the thing under test.
+  '''^XAB11secretcode$''',
+  '''^eyJhbGciOiJIUzI1NiJ9\.(payloadpayload\.signature|cGF5bG9hZA\.c2lnbmF0dXJl)$''',
+]
+
+[[allowlists]]
+description = "Documentation placeholders written as ellipses"
+regexTarget = "match"
+regexes = [
+  '''["']\.\.\.["']''',
+]

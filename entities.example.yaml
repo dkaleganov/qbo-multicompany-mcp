@@ -1,0 +1,27 @@
+# Example registry. Copy to entities.yaml and edit.
+#
+# entities.yaml is git-ignored on purpose: it names your real QuickBooks realm
+# ids. The values below are placeholders and will not authenticate anywhere.
+#
+# - The key is how every tool call names the company. It is explicit in every
+#   call; there is no default entity and no matching on company name. It is
+#   printed in results and stored in the rate-limit file, so it may not
+#   contain a realm_id (the last four digits are fine).
+# - realm_id is the identity. Each entity must name a DISTINCT realm; the
+#   server exits 2 on a duplicate.
+# - display_name is verified against the company name Intuit reports, then
+#   shown to humans. It is never used to route a call.
+# - writes may only be `false`, and may be omitted. This server is read-only.
+
+entities:
+  acme_main:
+    display_name: Acme Main
+    realm_id: "0000000000000001"
+    environment: sandbox
+    writes: false
+
+  acme_ops:
+    display_name: Acme Ops
+    realm_id: "0000000000000002"
+    environment: sandbox
+    writes: false
