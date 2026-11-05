@@ -118,8 +118,7 @@ DESCRIPTION: Final = (
     "take due dates only, and may omit them. Summary reports may omit "
     "the window. TaxSummary requires agency_id. columns is restricted to each "
     "report's allowlist; address, email, telephone, message and account-number "
-    "columns can be neither requested nor returned. Read-only; requires an "
-    "explicit 'entity'." + FREE_TEXT_DISCLOSURE
+    "columns can be neither requested nor returned. Read-only." + FREE_TEXT_DISCLOSURE
 )
 
 REPORT_NOTE: Final = (

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.1
+
+A listing release: the server behaves as in 0.1.0. In the server only text changed, and in the tool list only
+the tool descriptions and the `entity` parameter's description.
+
+- Each tool's description says which sibling fits a nearby need, following the "Choosing a tool" table in
+  [docs/tools.md](docs/tools.md).
+- The `entity` parameter's description carries the rule that the key is exact, with no default company, so the
+  tool descriptions no longer repeat it.
+- `server_info` lists what it reports more plainly, and `list_reference_data` drops a field list its output
+  schema already carries.
+- `server.json` for the MCP Registry, and `glama.json`. The repository hygiene test accepts the two new hosts
+  they name, `pypi.org` and `glama.ai`.
+- The README names the server for the MCP Registry, uses absolute links so they work on PyPI, and shows how to
+  run the package with `uvx`.
+
 ## 0.1.0
 
 First public release: a read-only stdio MCP server that serves several QuickBooks Online company files

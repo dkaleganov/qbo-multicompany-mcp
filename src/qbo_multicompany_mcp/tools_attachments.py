@@ -54,7 +54,7 @@ DESCRIPTION_LIST: Final = (
     "a link. Use this to learn whether a receipt exists and what it is; use "
     "get_attachment, when this server has it enabled, for the file itself, and "
     "get_transaction for the transaction. transaction_type and transaction_id "
-    "filter together or not at all. Read-only; requires an explicit 'entity'."
+    "filter together or not at all. Read-only."
     + FREE_TEXT_DISCLOSURE
 )
 
@@ -65,8 +65,7 @@ DESCRIPTION_GET: Final = (
     "what the file is. The file comes through a separate client that carries "
     "no credential, contacts only a pinned storage host over https, refuses "
     "private destinations and unsupported content types, and caps the size; "
-    "a refusal says which gate refused. Read-only; requires an explicit "
-    "'entity'." + FREE_TEXT_DISCLOSURE
+    "a refusal says which gate refused. Read-only." + FREE_TEXT_DISCLOSURE
 )
 
 _DOWNLOAD_NOTE_OFF: Final = (

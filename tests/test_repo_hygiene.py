@@ -116,12 +116,13 @@ def test_a_sibling_of_an_allowed_host_is_not_allowed() -> None:
 
 def test_only_reserved_example_domains_appear() -> None:
     """Hosts in tracked text are RFC 2606 / RFC 6761 reserved names, Intuit's own,
-    or the two public hosts the docs link to."""
+    the two public hosts the docs link to, or the two hosts the listing files add."""
     hosts = re.compile(r"https?://(\[[0-9A-Fa-f:]+\]|[A-Za-z0-9.\-:@]+)")
     # RFC 2606 / RFC 6761 reserved names, plus the one real vendor host this
     # package talks to and the host of this repository's own URLs. `.example`
     # is a reserved TLD in its own right, which is what documentation hostnames
-    # like oauth.your-domain.example use.
+    # like oauth.your-domain.example use. server.json and glama.json name two of
+    # the registries the package is listed on, PyPI and Glama.
     allowed_suffixes = (
         ".intuit.com",
         ".example",
@@ -133,6 +134,8 @@ def test_only_reserved_example_domains_appear() -> None:
         "localhost",
         "modelcontextprotocol.io",
         "github.com",
+        "pypi.org",
+        "glama.ai",
     )
     offenders: list[tuple[str, str]] = []
     for path in text_files():

@@ -599,8 +599,7 @@ def register_report_tools(
             "for balances as of a date and report_general_ledger for the postings "
             "behind an account. accounting_method defaults to the company's report "
             "basis. class and department filters require the company to track them "
-            "and are refused otherwise, never dropped. Read-only; requires an explicit "
-            "'entity'." + FREE_TEXT_DISCLOSURE
+            "and are refused otherwise, never dropped. Read-only." + FREE_TEXT_DISCLOSURE
         ),
     )
     def report_profit_and_loss(
@@ -675,8 +674,7 @@ def register_report_tools(
             "as end_date) or date_macro (a documented range whose end is that date), "
             "one of them; start_date is optional with as_of. accounting_method "
             "defaults to the company's report basis. class and department filters "
-            "require the company to track them and are refused otherwise. Read-only; "
-            "requires an explicit 'entity'." + FREE_TEXT_DISCLOSURE
+            "require the company to track them and are refused otherwise. Read-only." + FREE_TEXT_DISCLOSURE
         ),
     )
     def report_balance_sheet(
@@ -747,7 +745,7 @@ def register_report_tools(
             "for the postings behind an account; use list_transactions for a flat "
             "list across types. account_type takes the AccountType enum with the "
             "spaces removed. columns is restricted to the allowlist; lists of 25 or "
-            "more are refused. Read-only; requires an explicit 'entity'."
+            "more are refused. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -819,7 +817,7 @@ def register_report_tools(
             "take aging_method, report_date or date_macro, sort_order and department. "
             "A combination the endpoint does not accept is refused before any request. "
             "payables on a company without accounts payable is an error, never an "
-            "empty report. Read-only; requires an explicit 'entity'."
+            "empty report. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )

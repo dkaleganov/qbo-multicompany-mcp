@@ -3920,12 +3920,12 @@ MUTATIONS: tuple[Mutation, ...] = (
         path=f"{SRC}/tools_data.py",
         edits=(
             (
-                "            \"Read-only; requires an explicit 'entity'.\"\n"
+                "            \"Read-only.\"\n"
                 "            + FREE_TEXT_DISCLOSURE\n"
                 "        ),\n"
                 "    )\n"
                 "    def get_transaction(",
-                "            \"Read-only; requires an explicit 'entity'.\"\n"
+                "            \"Read-only.\"\n"
                 "        ),\n"
                 "    )\n"
                 "    def get_transaction(",
@@ -4966,7 +4966,7 @@ MUTATIONS: tuple[Mutation, ...] = (
         path=f"{SRC}/tools.py",
         edits=(
             (
-                'EntityKey = Annotated[str, Field(description="The company\'s key, from list_entities.")]\n',
+                'EntityKey = Annotated[str, Field(description="The company\'s exact key from list_entities, not its display name; there is no default company.")]\n',
                 "EntityKey = str\n",
             ),
         ),

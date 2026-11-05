@@ -1,5 +1,7 @@
 # qbo-multicompany-mcp
 
+<!-- mcp-name: io.github.dkaleganov/qbo-multicompany-mcp -->
+
 A read-only [MCP](https://modelcontextprotocol.io) server that serves **several QuickBooks Online
 company files** to one AI session over stdio. Every call to QuickBooks names its company through an
 explicit `entity` key. There's no default company and no matching on company name.
@@ -58,12 +60,30 @@ every Claude Code session on your account, so you can run those sessions outside
 claude mcp add --scope user qbo -- "<repo>/.venv/bin/qbo-multicompany-mcp" --env-file "<repo>/.env" --entities "<repo>/entities.yaml"
 ```
 
-[docs/getting-started.md](docs/getting-started.md) walks through every step, including Claude Desktop and
-Codex. Production needs more: [docs/production.md](docs/production.md).
+[docs/getting-started.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/getting-started.md) walks through every step, including Claude Desktop and
+Codex. Production needs more: [docs/production.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/production.md).
+
+### From PyPI, without a clone
+
+`uvx` runs the published package. Save [`.env.example`](https://github.com/dkaleganov/qbo-multicompany-mcp/raw/v0.1.1/.env.example) as `.env` and
+[`entities.example.yaml`](https://github.com/dkaleganov/qbo-multicompany-mcp/raw/v0.1.1/entities.example.yaml) as `entities.yaml` in a private folder, `chmod 600`
+both, and fill them in as above. With `<dir>` standing for that folder's absolute path:
+
+```bash
+uvx --from qbo-multicompany-mcp@0.1.1 qbo-multicompany-mcp-auth --env-file "<dir>/.env" --entities "<dir>/entities.yaml" init-key
+```
+
+```bash
+uvx --from qbo-multicompany-mcp@0.1.1 qbo-multicompany-mcp-auth --env-file "<dir>/.env" --entities "<dir>/entities.yaml" connect acme_main
+```
+
+```bash
+claude mcp add --scope user qbo -- uvx qbo-multicompany-mcp@0.1.1 --env-file "<dir>/.env" --entities "<dir>/entities.yaml"
+```
 
 ## Tools
 
-Eighteen by default, and one opt-in. [docs/tools.md](docs/tools.md) has every parameter and a "Choosing a
+Eighteen by default, and one opt-in. [docs/tools.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/tools.md) has every parameter and a "Choosing a
 tool" table.
 
 | Tool | Returns |
@@ -114,9 +134,9 @@ around that.
   environment, and no tool takes a secret or an authorization code or returns one. Anything running as
   you can read a plain `.env` and the token store's key, from any folder. Keeping AI sessions out of the repo
   folder keeps `.env` and `entities.yaml` out of an agent's working folder; an agent with a shell can still
-  reach both, and the key, as [SECURITY.md](SECURITY.md) explains.
-- **Descriptions route.** Several tools say in their descriptions when another fits better, and the "Choosing a
-  tool" table in [docs/tools.md](docs/tools.md) covers the whole surface for people.
+  reach both, and the key, as [SECURITY.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/SECURITY.md) explains.
+- **Descriptions route.** Every tool's description says when another fits better, and the "Choosing a
+  tool" table in [docs/tools.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/tools.md) covers the whole surface for people.
 
 ## Read-only, and how that's enforced
 
@@ -124,7 +144,7 @@ Intuit offers no read-only accounting scope: the one scope covers reads and writ
 in this code. Every request is inspected as a fully built `httpx.Request` immediately before it's sent, and
 accounting requests may only be `GET`s to an allowlisted path on the exact bound company. OAuth calls go only to
 Intuit's fixed endpoints, the opt-in attachment download goes only to a host you pin, and everything else is
-denied. [docs/design.md](docs/design.md) has the policy, and how walks, reports and the token store behave.
+denied. [docs/design.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/design.md) has the policy, and how walks, reports and the token store behave.
 
 ## How it's verified
 
@@ -132,16 +152,16 @@ denied. [docs/design.md](docs/design.md) has the policy, and how walks, reports 
   and no network. That count needs git 2.32 or later and `gitleaks` on your PATH; without gitleaks 25 more
   skip.
 - **Mutation gate.** A passing suite doesn't prove a safety behaviour is protected, so
-  [`scripts/mutation_gate.py`](scripts/mutation_gate.py) has 480 entries that each delete one and require
+  [`scripts/mutation_gate.py`](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/scripts/mutation_gate.py) has 480 entries that each delete one and require
   its tests to fail. It has controls of its own, so it can't quietly pass by testing nothing.
-- **Leak checks.** Custom [gitleaks](.gitleaks.toml) rules for Intuit credentials, each proven to fire on a
-  canary, plus [`scripts/scrub_check.py`](scripts/scrub_check.py) for identifier-shaped values.
+- **Leak checks.** Custom [gitleaks](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/.gitleaks.toml) rules for Intuit credentials, each proven to fire on a
+  canary, plus [`scripts/scrub_check.py`](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/scripts/scrub_check.py) for identifier-shaped values.
 - **Live runs.** Every tool has run over stdio in sandbox: the default tools on this release, and
   `get_attachment` on a pre-release build. Every default tool ran on production, read-only, on 2026-09-28 with a
   pre-release build, apart from `TaxSummary` under `run_report`, which has never returned rows.
-  What the live runs found is in [docs/api-findings.md](docs/api-findings.md).
+  What the live runs found is in [docs/api-findings.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/api-findings.md).
 
-[CHANGELOG.md](CHANGELOG.md) separates what was verified live from what has only run on fixtures.
+[CHANGELOG.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/CHANGELOG.md) separates what was verified live from what has only run on fixtures.
 
 ## Example prompts
 
@@ -164,7 +184,7 @@ denied. [docs/design.md](docs/design.md) has the policy, and how walks, reports 
   `SELECT *`, and `list_changes` refuses them too. Use `list_transactions` and `get_transaction`.
 - **Filters validate differently.** An unknown parameter name is discarded upstream, a bad enum value is a 400,
   and an id or text that matches nothing is an empty 200. This server handles each, and
-  [docs/design.md](docs/design.md#limits-worth-knowing) explains how.
+  [docs/design.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/docs/design.md#limits-worth-knowing) explains how.
 - **Vendor payment totals are candidates.** They're a cross-check against a bank ledger, not a filing
   classifier, and they haven't been reconciled by hand against one.
 - **Sandbox isn't production.** A value confirmed in sandbox may not hold on a production company.
@@ -184,8 +204,8 @@ denied. [docs/design.md](docs/design.md) has the policy, and how walks, reports 
 macOS is tested. Windows is unsupported: the store relies on POSIX file locks. Linux should work with
 `QBO_TOKEN_KEY_SOURCE=env` but hasn't been tested. This is an alpha, frozen at this release, with best-effort
 maintenance: bug
-reports are welcome, and security reports go through [SECURITY.md](SECURITY.md).
+reports are welcome, and security reports go through [SECURITY.md](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/SECURITY.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](https://github.com/dkaleganov/qbo-multicompany-mcp/blob/v0.1.1/LICENSE).

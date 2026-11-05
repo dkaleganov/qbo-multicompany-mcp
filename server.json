@@ -1,0 +1,88 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dkaleganov/qbo-multicompany-mcp",
+  "description": "Unofficial read-only MCP server for several QuickBooks Online company files in one AI session.",
+  "repository": {
+    "url": "https://github.com/dkaleganov/qbo-multicompany-mcp",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "qbo-multicompany-mcp",
+      "version": "0.1.1",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "named",
+          "name": "--entities",
+          "description": "Path to your private entities.yaml: one entry per company, with its key, display_name, realm_id and environment. Connect each company first with qbo-multicompany-mcp-auth (see the README).",
+          "format": "filepath",
+          "isRequired": true
+        },
+        {
+          "type": "named",
+          "name": "--env-file",
+          "description": "Optional private dotenv file, read only when this flag is passed. A variable already set in the environment wins over the file.",
+          "format": "filepath",
+          "isRequired": false
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "QBO_CLIENT_ID",
+          "description": "Client ID of your own Intuit app, here or in the --env-file file. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "QBO_CLIENT_SECRET",
+          "description": "Client Secret of your own Intuit app, here or in the --env-file file. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "QBO_ENV",
+          "description": "sandbox or production; sandbox when unset. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "QBO_TOKEN_KEY_SOURCE",
+          "description": "Where the token store key lives: keychain (the default, macOS only) or env (QBO_TOKEN_KEY). A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "QBO_TOKEN_KEY",
+          "description": "The store key when QBO_TOKEN_KEY_SOURCE=env: 32 bytes as 44 characters of base64 or 64 of hex. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "QBO_TOKEN_STORE",
+          "description": "Token store directory. Defaults to $XDG_STATE_HOME/qbo-multicompany-mcp, else ~/.local/state/qbo-multicompany-mcp. A git working copy or a cloud-sync folder is refused. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "QBO_ALLOW_DOCUMENTS",
+          "description": "Set to 1 to register get_attachment, which fetches nothing until QBO_ATTACHMENT_HOSTS pins a host. Off by default. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "QBO_ATTACHMENT_HOSTS",
+          "description": "Comma-separated storage hosts attachment downloads may contact. Empty refuses every download. A value set here, even a blank one, overrides --env-file.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

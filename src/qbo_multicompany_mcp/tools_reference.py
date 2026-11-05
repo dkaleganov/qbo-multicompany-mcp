@@ -75,15 +75,12 @@ Kind = enum_of(tuple(KINDS))
 DESCRIPTION: Final = (
     "List one company's reference data of one kind: classes, departments "
     "(locations), items (products and services), payment terms, payment "
-    "methods, tax codes or tax rates, walked to the end and projected to names, "
-    "ids, active flags, hierarchy, term days and discounts, item types and "
-    "account references, tax-code flags and rate ids, and tax-rate values. Use "
+    "methods, tax codes or tax rates, walked to the end. Use "
     "this for the ids the report filters take (class, department, item) and "
     "for what a term or tax code means; use list_accounts for accounts and "
     "list_vendors or list_customers for parties. active=null includes inactive "
     "rows. A company whose Preferences turn class or department tracking off "
-    "returns an empty list that says so. Read-only; requires an explicit "
-    "'entity'." + FREE_TEXT_DISCLOSURE
+    "returns an empty list that says so. Read-only." + FREE_TEXT_DISCLOSURE
 )
 
 

@@ -362,8 +362,11 @@ def register_data_tools(
         annotations=read_only("List vendors"),
         description=(
             "List a company's vendors with the 1099 flag, balance, and whether a "
-            "tax identifier is on file (never the value). Pass active=null to "
-            "include inactive vendors. Read-only; requires an explicit 'entity'."
+            "tax identifier is on file (never the value). Use this for the vendor "
+            "list and the 1099 flag; use summarize_vendor_payments for candidate "
+            "totals of what was paid and report_aging for what is owed by age. "
+            "Pass active=null to "
+            "include inactive vendors. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -416,9 +419,11 @@ def register_data_tools(
         title="List customers",
         annotations=read_only("List customers"),
         description=(
-            "List a company's customers with their balances. Carries no tax ids, "
-            "notes or contact fields. Pass active=null to include inactive. "
-            "Read-only; requires an explicit 'entity'."
+            "List a company's customers with their balances. Use this for the "
+            "customer list; use report_aging for receivables by age and run_query "
+            "for filters this tool lacks. Carries no "
+            "tax ids, notes or contact fields. Pass active=null to include inactive. "
+            "Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -461,10 +466,14 @@ def register_data_tools(
         annotations=read_only("List transactions in a date window"),
         description=(
             "Read TransactionList report rows for a date window of at most six "
-            "calendar months, one flat row per transaction. Each routable row "
+            "calendar months, one flat row per transaction. Use this to find "
+            "transactions and their ids; use report_general_ledger for postings by "
+            "account and run_report for TransactionList grouped by customer or by "
+            "vendor, or with splits; run_query only counts transactions. Each "
+            "routable row "
             "keeps its transaction type and id, which is how you get from a row "
             "to get_transaction; see that tool for turning a label into a type. "
-            "Read-only; requires an explicit 'entity'."
+            "Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -684,7 +693,9 @@ def register_data_tools(
             "Cash Expense, Check and the Credit Card labels are Purchase, the Bill "
             "Payment labels are BillPayment, Refund is RefundReceipt, and the rest "
             "drop their spaces. Estimate, Charge and Time Charge rows have no route. "
-            "Read-only; requires an explicit 'entity'."
+            "Use this for one transaction's lines and the report tools for totals "
+            "across transactions. "
+            "Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -736,7 +747,11 @@ def register_data_tools(
         title="Run a read-only SELECT",
         annotations=read_only("Run a read-only SELECT"),
         description=(
-            "Run one parsed SELECT against a served entity. Supports "
+            "Run one parsed SELECT against a served entity. Use this for filters "
+            "the list tools lack and for COUNT(*); for plain lists use "
+            "list_accounts, list_vendors, list_customers, list_reference_data or "
+            "list_attachments. "
+            "Supports "
             "SELECT * and SELECT COUNT(*), WHERE with AND, ORDERBY, "
             "STARTPOSITION and MAXRESULTS. No field lists: the documented grammar "
             "offers only SELECT * and COUNT(*). Served entities: "
@@ -745,7 +760,7 @@ def register_data_tools(
             "Purchase, PurchaseOrder, RefundReceipt, SalesReceipt, Transfer, "
             "VendorCredit) answer COUNT(*) only, and SELECT * on one is refused: "
             "for their rows, use list_transactions and get_transaction. "
-            "Read-only; requires 'entity'."
+            "Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -851,12 +866,15 @@ def register_data_tools(
         annotations=read_only("Candidate vendor payment totals for a year"),
         description=(
             "Per-vendor CANDIDATE payment totals for a calendar year, for "
-            "cross-checking against a bank ledger. Walks Purchase and "
+            "cross-checking against a bank ledger. Use this for candidate totals of "
+            "what was paid; use list_vendors for the 1099 flag and report_aging for "
+            "what is owed by age. "
+            "Walks Purchase and "
             "BillPayment; JournalEntry lines touching a vendor are returned for "
             "review and never summed. Bills are never added to their payments. "
             "No threshold is applied and no upper bound is claimed -- payment "
             "type is an accounting signal, not evidence of settlement or of any "
-            "tax obligation. Read-only; requires an explicit 'entity'."
+            "tax obligation. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -1013,10 +1031,14 @@ def register_data_tools(
         annotations=read_only("List recent changes and deletions"),
         description=(
             "List objects changed or deleted since a timestamp within the last "
-            "30 days, for supported types. The 1000-object cap is shared across "
+            "30 days, for supported types. Use this for changes and deletions on "
+            "list objects, and the list tools for the current objects; run_query on a "
+            "timestamp cannot see deletions, and transactions, tax codes and tax "
+            "rates are outside this tool. The "
+            "1000-object cap is shared across "
             "ALL requested types, so saturation makes every requested type "
             "uncertain. A possibly incomplete response is not a safe "
-            "synchronization checkpoint. Read-only; requires an explicit 'entity'."
+            "synchronization checkpoint. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )

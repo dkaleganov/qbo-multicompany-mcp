@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qbo-multicompany-mcp"
-version = "0.1.0"
-description = "Read-only MCP server serving several QuickBooks Online company files to one AI session."
+version = "0.1.1"
+description = "Unofficial read-only MCP server serving several QuickBooks Online company files to one AI session."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Dima Kaleganov" }]
-keywords = ["mcp", "quickbooks", "qbo", "read-only", "accounting"]
+keywords = ["mcp", "mcp-server", "model-context-protocol", "quickbooks", "quickbooks-online", "qbo", "read-only", "accounting"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",

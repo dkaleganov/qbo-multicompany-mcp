@@ -136,7 +136,7 @@ FREE_TEXT_DISCLOSURE = (
 #: Every parameter has a description, and ``entity`` comes first on every
 #: Intuit-backed tool. Described once, here, so all seventeen say the same
 #: thing.
-EntityKey = Annotated[str, Field(description="The company's key, from list_entities.")]
+EntityKey = Annotated[str, Field(description="The company's exact key from list_entities, not its display name; there is no default company.")]
 
 #: ``format: date`` on every YYYY-MM-DD argument. Carried by the string type
 #: itself, so an optional date has it inside its ``anyOf`` string branch. Schema
@@ -399,7 +399,8 @@ def register_tools(server: MCPServer, settings: Settings, registry: Registry) ->
             "List every QuickBooks company this server is configured for, with its "
             "authorisation state and refresh freshness. Reads the local token store "
             "only; makes no request to QuickBooks. Use this to discover the 'entity' "
-            "key that every other tool requires."
+            "key the company tools require; use server_info for this server's own "
+            "build and settings."
         ),
     )
     def list_entities() -> Annotated[CallToolResult, ListEntitiesEnvelope]:
@@ -479,9 +480,13 @@ def register_tools(server: MCPServer, settings: Settings, registry: Registry) ->
         title="Server information",
         annotations=read_only("Server information", open_world=False),
         description=(
-            "Report this server's build, environment, read-only status, token-store "
-            "protection and whether any company has gone over an hour without a refresh, "
-            "which is normal between keepalive runs. Makes no request to QuickBooks."
+            "Report this server's own state: build, environment, read-only status, "
+            "token-store protection, whether documents are enabled and app credentials "
+            "are set, "
+            "and which companies have gone over an hour without a refresh (normal "
+            "between keepalive runs). Reads only local state: it makes no request to "
+            "QuickBooks and returns no token or secret. Use this for the server "
+            "itself; use list_entities for each company's key and auth state."
         ),
     )
     def server_info() -> Annotated[CallToolResult, ServerInfoEnvelope]:
@@ -547,8 +552,9 @@ def register_tools(server: MCPServer, settings: Settings, registry: Registry) ->
         description=(
             "Read one company's CompanyInfo and its accounting settings (report basis, "
             "fiscal-year start, book-close date, currency, multi-currency, class and "
-            "department tracking), plus the capabilities derived from them. "
-            "Requires an explicit 'entity' key from list_entities. Read-only."
+            "department tracking), plus the capabilities derived from them. Use "
+            "this for one company's settings; use list_entities for the configured "
+            "keys and their auth state. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
@@ -631,7 +637,9 @@ def register_tools(server: MCPServer, settings: Settings, registry: Registry) ->
             "active accounts unless 'active' says otherwise, optionally one "
             "account_type or classification. Each account carries both its own balance and its balance including "
             "sub-accounts; the second already contains the first, so never add them "
-            "together. Requires an explicit 'entity' key. Read-only."
+            "together. Use this for account ids and current balances; use "
+            "report_balance_sheet for balances as of a date and list_reference_data "
+            "for classes, departments and items. Read-only."
             + FREE_TEXT_DISCLOSURE
         ),
     )
