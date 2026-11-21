@@ -747,9 +747,9 @@ def register_data_tools(
         title="Run a read-only SELECT",
         annotations=read_only("Run a read-only SELECT"),
         description=(
-            "Run one parsed SELECT against a served entity. Use this for filters "
-            "the list tools lack and for COUNT(*); for plain lists use "
-            "list_accounts, list_vendors, list_customers, list_reference_data or "
+            "Run one parsed SELECT against a served entity, in the QuickBooks Online Accounting API's query language "
+            "(https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api/data-queries). Use this for filters "
+            "the list tools lack and for COUNT(*); for plain lists use list_accounts, list_vendors, list_customers, list_reference_data or "
             "list_attachments. "
             "Supports "
             "SELECT * and SELECT COUNT(*), WHERE with AND, ORDERBY, "

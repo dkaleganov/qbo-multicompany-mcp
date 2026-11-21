@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2
+
+A listing release: the server behaves as in 0.1.1. One tool description changed.
+
+- `run_query` names the QuickBooks Online Accounting API's query language and links Intuit's query documentation.
+- The README's links are pinned to the tag `v0.1.2`; its `uvx` commands, `pyproject.toml`, `server.json` and
+  `uv.lock` move to 0.1.2.
+
 ## 0.1.1
 
 A listing release: the server behaves as in 0.1.0. In the server only text changed, and in the tool list only

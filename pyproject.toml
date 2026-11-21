@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qbo-multicompany-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Unofficial read-only MCP server serving several QuickBooks Online company files to one AI session."
 readme = "README.md"
 requires-python = ">=3.11"
