@@ -2,6 +2,8 @@
 
 <!-- mcp-name: io.github.dkaleganov/qbo-multicompany-mcp -->
 
+[![dkaleganov/qbo-multicompany-mcp MCP server](https://glama.ai/mcp/servers/dkaleganov/qbo-multicompany-mcp/badges/score.svg)](https://glama.ai/mcp/servers/dkaleganov/qbo-multicompany-mcp)
+
 A read-only [MCP](https://modelcontextprotocol.io) server that serves **several QuickBooks Online
 company files** to one AI session over stdio. Every call to QuickBooks names its company through an
 explicit `entity` key. There's no default company and no matching on company name.
